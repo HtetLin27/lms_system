@@ -1,0 +1,35 @@
+# lms-system/.gitignore
+
+# Dependencies — never commit these
+node_modules/
+
+# Environment files — contain real secrets
+.env
+.env.local
+.env.production
+.env.*.local
+
+# Build outputs
+dist/
+build/
+.next/
+
+# Test coverage
+coverage/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/settings.json   # we DO commit extensions.json but not settings
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+
+# Temporary files
+tmp/
+temp/
