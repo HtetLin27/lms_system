@@ -1,7 +1,7 @@
 import User from "./User.js";
 import Course from './Course.js';
 import Category from './Category.js';
-// import Lesson from './Lesson.js';
+import Lesson from './Lesson.js';
 // import Enrollment from './Enrollment.js';
 // import LessonProgress from './LessonProgress.js';
 // import Quiz from './Quiz.js';
@@ -24,8 +24,8 @@ Course.belongsTo(Category, { foreignKey: 'category_id', as: 'category' });
 // User.hasMany(QuizAttempt,  { foreignKey: 'student_id', as: 'quizAttempts' });
 // QuizAttempt.belongsTo(User, { foreignKey: 'student_id', as: 'student' });
 
-// Course.hasMany(Lesson, { foreignKey: 'course_id', as: 'lessons' });
-// Lesson.belongsTo(Course, { foreignKey: 'course_id', as: 'course' });
+Course.hasMany(Lesson, { foreignKey: 'course_id', as: 'lessons' });
+Lesson.belongsTo(Course, { foreignKey: 'course_id', as: 'course' });
 
 // Course.hasMany(Enrollment, { foreignKey: 'course_id', as: 'enrollments' });
 // Enrollment.belongsTo(Course, { foreignKey: 'course_id', as: 'course' });
@@ -57,8 +57,8 @@ Course.belongsTo(Category, { foreignKey: 'category_id', as: 'category' });
 export {
   User,
   Course,
-  Category
-  // Lesson,
+  Category,
+  Lesson,
   // Enrollment,
   // LessonProgress,
   // Quiz,
