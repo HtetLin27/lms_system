@@ -38,4 +38,7 @@ router.delete('/:slug',
   deleteCourse
 );
 
+router.use('/:slug/lessons', require('./lessons.routes'));
+
+
 export default router;
