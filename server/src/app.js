@@ -12,6 +12,7 @@ import progressRoutes from "./routes/progress.routes.js";
 import quizzesRoutes from "./routes/quizzes.routes.js";
 import uploadsRoutes from "./routes/uploads.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
+import enrollmentRoutes from'./routes/enrollments.routes';
 dotenv.config();
 
 const app = express();
@@ -50,6 +51,8 @@ app.use("/api/progress", progressRoutes);
 app.use("/api/quizzes", quizzesRoutes);
 app.use("/api/uploads", uploadsRoutes);
 app.use("/api/admin", adminRoutes);
+app.use('/api/enrollments', enrollmentRoutes);
+
 
 // ── Health check ──────────────────────────────────────────────────────────────
 // Why: deployment platforms ping this to check if the server is alive.
