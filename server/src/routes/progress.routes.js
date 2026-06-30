@@ -1,14 +1,17 @@
-import express from 'express';
+
+
+import express from ('express');
+import {
+  markLessonComplete, unmarkLessonComplete, getCourseProgress,
+} from '../controllers/progress.controller';
+import { protect, authorise } from '../middleware/auth.middleware';
+
 const router = express.Router();
 
-// ── Admin dashboard routes ────────────────────────────────────────────────────
-// Why: These are protected routes that only admins can access.
-// They allow admins to manage courses, users, and view analytics.
+router.use(protect, authorise('student'));
 
-// Example admin route: Get all users (for admin dashboard)
-router.get('/', async (req, res) => {
-    // Placeholder for fetching all users from the database
-    res.json({ message: 'List of all users (admin only)' });
-});
+router.post('/lessons/:lessonId/complete',  markLessonComplete);
+router.delete('/lessons/:lessonId/complete',munmarkLessonComplete);
+router.get('/courses/:slug', getCourseProgress);
 
 export default router;
