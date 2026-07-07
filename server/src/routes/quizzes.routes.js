@@ -1,14 +1,25 @@
 import express from 'express';
-const router = express.Router();
+import {
+  createQuiz, getQuiz, submitAttempt, getMyAttempts,
+} from '../controllers/quizzes.controller';
+import { createQuizRules, submitAttemptRules } from'../middleware/quiz.validator';
+import { protect, authorise } from '../middleware/auth.middleware';
 
-// ── Admin dashboard routes ────────────────────────────────────────────────────
-// Why: These are protected routes that only admins can access.
-// They allow admins to manage courses, users, and view analytics.
+const router = express.Router({ mergeParams: true });
 
-// Example admin route: Get all users (for admin dashboard)
-router.get('/', async (req, res) => {
-    // Placeholder for fetching all users from the database
-    res.json({ message: 'List of all users (admin only)' });
-});
+router.post('/',
+  protect,authorise('instructor','admin'),
+  createQuizRules, createQuiz
+);
+
+router.get('/:id', protect, getQuiz);
+
+router.post('/:id/attempts',
+  protect, authorise('student'),
+  submitAttemptRules, submitAttempt
+);
+
+router.get('/:id/attempts', protect, authorise('student'), getMyAttempts);
+
 
 export default router;

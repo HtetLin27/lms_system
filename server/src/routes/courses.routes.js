@@ -6,6 +6,8 @@ import {
   enrollInCourse, dropCourse, getCourseEnrollments,
 } from '../controllers/enrollments.controller';
 import { dropCourseRules } from '../middleware/enrollment.validator';
+import lessonRoutes from './lessons.routes.js';
+import quizRoutes from './quizzes.routes.js';
 const router = express.Router();
 
 router.get('/my', protect, authorise('instructor', 'admin'), getMyCourses);
@@ -58,7 +60,9 @@ router.get('/:slug/enrollments',
   getCourseEnrollments
 );
 
-router.use('/:slug/lessons', require('./lessons.routes'));
+router.use('/:slug/lessons', lessonRoutes);
+
+router.use('/:slug/quizzes', quizRoutes);
 
 
 export default router;
