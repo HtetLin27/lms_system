@@ -1,5 +1,7 @@
 import { Lesson, Course, Enrollment, LessonProgress } from '../models/index';
 import { recalculateProgress } from '../services/progress.service';
+import { generateCertificate } from '../services/certificate.service';
+
 
 const markLessonComplete = async (req, res, next) => {
   try {
@@ -41,6 +43,9 @@ const markLessonComplete = async (req, res, next) => {
 
     if (justCompleted) {
       console.log(`🎉 Student ${req.user.id} completed course ${lesson.course_id}`);
+      generateCertificate(updated).catch(err =>
+        console.error('Background certificate error:', err.message)
+      );
     }
 
     return res.status(200).json({

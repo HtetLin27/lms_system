@@ -13,6 +13,7 @@ import quizzesRoutes from "./routes/quizzes.routes.js";
 import uploadsRoutes from "./routes/uploads.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import enrollmentRoutes from'./routes/enrollments.routes';
+import certificatesRoutes from './routes/certificates.routes.js';
 dotenv.config();
 
 const app = express();
@@ -33,16 +34,16 @@ app.use(
   }),
 );
 
-// ── Logging ───────────────────────────────────────────────────────────────────
+
 if (config.app.env !== "test") {
   app.use(morgan("dev"));
 }
 
-// ── Body parsing ──────────────────────────────────────────────────────────────
+
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
-// ── Routes ────────────────────────────────────────────────────────────────────
+
 app.use("/api/auth", authRoutes);
 app.use("/api/courses", coursesRoutes);
 app.use("/api/lessons", lessonsRoutes);
@@ -52,6 +53,7 @@ app.use("/api/quizzes", quizzesRoutes);
 app.use("/api/uploads", uploadsRoutes);
 app.use("/api/admin", adminRoutes);
 app.use('/api/enrollments', enrollmentRoutes);
+app.use('/api/certificates', certificatesRoutes);
 
 
 // ── Health check ──────────────────────────────────────────────────────────────
@@ -61,9 +63,7 @@ app.get("/health", (req, res) =>
   res.json({ status: "ok", env: config.app.env }),
 );
 
-// ── 404 handler ───────────────────────────────────────────────────────────────
-// Why: if no route matched, return a clear 404 instead of Express's
-// default HTML error page.
+
 app.use((req, res) => {
   res.status(404).json({ error: `Route ${req.method} ${req.url} not found` });
 });

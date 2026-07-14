@@ -3,6 +3,7 @@ import { Course, Lesson, Quiz, Question, Option, QuizAttempt, Enrollment }from '
 import { isCourseOwner, isEnrolled } from '../utils/ownership';
 import { scoreQuizAttempt, getAttemptCount } from '../services/quiz.service';
 import { recalculateProgress } from '../services/progress.service';
+import { generateCertificate } from '../services/certificate.service';
 
 const createQuiz = async (req, res, next) => {
     try{
@@ -164,6 +165,12 @@ const submitAttempt = async (req, res, next) => {
             if(enrollment){
                 const { justCompleted } = await recalculateProgress(enrollment.id);
                 courseComplete = justCompleted;
+                if (justCompleted) {
+                    const completedEnrollment = await Enrollment.findByPk(enrollment.id);
+                    generateCertificate(completedEnrollment).catch(err =>
+                        console.error('Background certificate error:', err.message)
+                    );
+                }
             }
         }
 
