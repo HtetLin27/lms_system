@@ -8,7 +8,7 @@ import Quiz from './Quiz.js';
 import Question from './Question.js';
 import Option from './Option.js';
 import QuizAttempt from './QuizAttempt.js';
-// import Certificate from './Certificate.js';
+import Certificate from './Certificate.js';
 
 // Associations
 
@@ -39,8 +39,8 @@ Quiz.belongsTo(Lesson, { foreignKey: 'lesson_id', as: 'lesson' });
 Enrollment.hasMany(LessonProgress, { foreignKey: 'enrollment_id', as: 'lessonProgress' });
 LessonProgress.belongsTo(Enrollment, { foreignKey: 'enrollment_id', as: 'enrollment' });
 
-// Enrollment.hasOne(Certificate, { foreignKey: 'enrollment_id', as: 'certificate' });
-// Certificate.belongsTo(Enrollment, { foreignKey: 'enrollment_id', as: 'enrollment' });
+Enrollment.hasOne(Certificate, { foreignKey: 'enrollment_id', as: 'certificate' });
+Certificate.belongsTo(Enrollment, { foreignKey: 'enrollment_id', as: 'enrollment' });
 
 LessonProgress.belongsTo(Lesson, { foreignKey: 'lesson_id', as: 'lesson' });
 Lesson.hasMany(LessonProgress, { foreignKey: 'lesson_id', as: 'progress' });
@@ -65,5 +65,5 @@ export {
   Question,
   Option,
   QuizAttempt,
-  // Certificate,
+  Certificate,
 };
