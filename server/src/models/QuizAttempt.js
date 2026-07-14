@@ -40,3 +40,5 @@ QuizAttempt.init({
     tableName: "quiz_attempts",
     timestamps: false,
 })
+
+export default QuizAttempt;
