@@ -1,10 +1,8 @@
-
-
-import { Question, Option, QuizAttempt } from '../models/index';
+import { Question, Option, QuizAttempt } from '../models/index.js';
 
 const scoreQuizAttempt = async (quizId, submittedAnswers) => {
   const questions = await Question.findAll({
-    where:   { quiz_id: quizId },
+    where: { quiz_id: quizId },
     include: [{ model: Option, as: 'options' }],
   });
 
@@ -17,7 +15,7 @@ const scoreQuizAttempt = async (quizId, submittedAnswers) => {
   for (const question of questions) {
     const selectedOptionId = submittedAnswers[question.id];
 
-    const correctOption = question.options.find(o => o.is_correct === true);
+    const correctOption = question.options.find((o) => o.is_correct === true);
 
     if (selectedOptionId && correctOption && selectedOptionId === correctOption.id) {
       correctCount++;
@@ -28,7 +26,6 @@ const scoreQuizAttempt = async (quizId, submittedAnswers) => {
 
   return { scorePercent, totalQuestions: questions.length, correctCount };
 };
-
 
 const getAttemptCount = async (quizId, studentId) => {
   return QuizAttempt.count({

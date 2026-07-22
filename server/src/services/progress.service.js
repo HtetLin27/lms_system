@@ -1,5 +1,4 @@
-import { Lesson, LessonProgress, Enrollment, Quiz, QuizAttempt } from '../models/index';
-
+import { Lesson, LessonProgress, Enrollment, Quiz, QuizAttempt } from '../models/index.js';
 
 const recalculateProgress = async (enrollmentId) => {
   const enrollment = await Enrollment.findByPk(enrollmentId);
@@ -23,13 +22,13 @@ const recalculateProgress = async (enrollmentId) => {
     where: { course_id: enrollment.course_id, lesson_id: null },
   });
 
-  let quizPassed = true; 
+  let quizPassed = true;
   if (finalQuiz) {
     const passedAttempt = await QuizAttempt.findOne({
       where: {
-        quiz_id:    finalQuiz.id,
+        quiz_id: finalQuiz.id,
         student_id: enrollment.student_id,
-        passed:     true,
+        passed: true,
       },
     });
     quizPassed = !!passedAttempt;
@@ -41,10 +40,8 @@ const recalculateProgress = async (enrollmentId) => {
 
   await enrollment.update({
     progress_percent: progressPercent,
-    status:           isComplete ? 'completed' : enrollment.status,
-    completed_at:     (isComplete && !wasAlreadyComplete)
-      ? new Date()
-      : enrollment.completed_at,
+    status: isComplete ? 'completed' : enrollment.status,
+    completed_at: isComplete && !wasAlreadyComplete ? new Date() : enrollment.completed_at,
   });
 
   const justCompleted = isComplete && !wasAlreadyComplete;
@@ -52,4 +49,5 @@ const recalculateProgress = async (enrollmentId) => {
   return { enrollment, justCompleted };
 };
 
+export { recalculateProgress };
 export default recalculateProgress;

@@ -4,18 +4,20 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start":    "node src/index.js",
-    "dev":      "nodemon --legacy-watch --watch src --ext js,mjs,cjs,json src/index.js",
-    "test":     "jest --watchAll=false --forceExit",
-    "test:watch":"jest --watch",
-    "migrate":  "sequelize-cli db:migrate",
+    "start": "node src/index.js",
+    "dev": "nodemon --legacy-watch --watch src --ext js,mjs,cjs,json src/index.js",
+    "test": "jest --watchAll=false --forceExit",
+    "test:watch": "jest --watch",
+    "migrate": "sequelize-cli db:migrate",
     "migrate:undo": "sequelize-cli db:migrate:undo",
-    "seed":     "sequelize-cli db:seed:all",
+    "seed": "sequelize-cli db:seed:all",
     "seed:undo": "sequelize-cli db:seed:undo:all"
   },
   "jest": {
     "testEnvironment": "node",
-    "testMatch": ["**/__tests__/**/*.test.js"],
+    "testMatch": [
+      "**/__tests__/**/*.test.js"
+    ],
     "testTimeout": 15000
   },
   "keywords": [],

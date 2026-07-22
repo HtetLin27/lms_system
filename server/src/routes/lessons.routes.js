@@ -1,18 +1,25 @@
-
-
-import express from ('express');
+import express from 'express';
 import {
-  listLessons, getLesson,
-  createLesson, updateLesson,
-  reorderLessons, deleteLesson,
-} from('../controllers/lessons.controller');
-import { createLessonRules, updateLessonRules, reorderLessonsRules } from('../middleware/lesson.validator');
-import { protect, authorise, optionalAuth } from('../middleware/auth.middleware');
+  listLessons,
+  getLesson,
+  createLesson,
+  updateLesson,
+  reorderLessons,
+  deleteLesson,
+} from '../controllers/lessons.controller.js';
+import {
+  createLessonRules,
+  updateLessonRules,
+  reorderLessonsRules,
+} from '../middleware/lesson.validator.js';
+import { protect, authorise, optionalAuth } from '../middleware/auth.middleware.js';
 
 const router = express.Router({ mergeParams: true });
 
-router.patch('/reorder',
-  protect, authorise('instructor', 'admin'),
+router.patch(
+  '/reorder',
+  protect,
+  authorise('instructor', 'admin'),
   reorderLessonsRules,
   reorderLessons
 );
@@ -24,23 +31,12 @@ router.get('/', optionalAuth, listLessons);
 router.get('/:id', protect, getLesson);
 
 // ── Create lesson ──────────────────────────────────────────────────────────
-router.post('/',
-  protect, authorise('instructor', 'admin'),
-  createLessonRules,
-  createLesson
-);
+router.post('/', protect, authorise('instructor', 'admin'), createLessonRules, createLesson);
 
 // ── Update lesson ──────────────────────────────────────────────────────────
-router.patch('/:id',
-  protect, authorise('instructor', 'admin'),
-  updateLessonRules,
-  updateLesson
-);
+router.patch('/:id', protect, authorise('instructor', 'admin'), updateLessonRules, updateLesson);
 
 // ── Delete lesson ──────────────────────────────────────────────────────────
-router.delete('/:id',
-  protect, authorise('instructor', 'admin'),
-  deleteLesson
-);
+router.delete('/:id', protect, authorise('instructor', 'admin'), deleteLesson);
 
 export default router;

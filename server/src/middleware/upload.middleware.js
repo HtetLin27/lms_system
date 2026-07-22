@@ -1,39 +1,40 @@
 import multer from 'multer';
-import config from '../config/config.js'
+import config from '../config/config.js';
 
 const memoryStorage = multer.memoryStorage();
 
-
 const createFileFilter = (allowedTypes) => {
-    return (req, file, cb) => {
-        if (allowedTypes.includes(file.mimetype)) {
-            cb(null, true);
-        } else {
-            cb(new Error(`Invalid file type: ${file.mimetype}. ` +
-        `Allowed types: ${allowedTypes.join(', ')}`), false);
-        }
-    };
+  return (req, file, cb) => {
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(
+        new Error(
+          `Invalid file type: ${file.mimetype}. ` + `Allowed types: ${allowedTypes.join(', ')}`
+        ),
+        false
+      );
+    }
+  };
 };
 
 const uploadImage = multer({
-    storage: memoryStorage,
-    limits: { fileSize: config.upload.maxImageSize },
-    fileFilter: createFileFilter(config.allowedImageTypes)
+  storage: memoryStorage,
+  limits: { fileSize: config.upload.maxImageSize },
+  fileFilter: createFileFilter(config.allowedImageTypes),
 }).single('image');
 
-
 const uploadPdf = multer({
-    storage: memoryStorage,
-    limits: { fileSize: config.upload.maxPdfSize },
-    fileFilter: createFileFilter(config.allowedPdfTypes)
+  storage: memoryStorage,
+  limits: { fileSize: config.upload.maxPdfSize },
+  fileFilter: createFileFilter(config.allowedPdfTypes),
 }).single('pdf');
 
 const uploadVideo = multer({
-    storage: memoryStorage,
-    limits: { fileSize: config.upload.maxVideoSize },
-    fileFilter: createFileFilter(config.allowedVideoTypes)
+  storage: memoryStorage,
+  limits: { fileSize: config.upload.maxVideoSize },
+  fileFilter: createFileFilter(config.allowedVideoTypes),
 }).single('video');
-
 
 const handleUpload = (uploadMiddleware) => (req, res, next) => {
   uploadMiddleware(req, res, (err) => {
@@ -57,9 +58,4 @@ const handleUpload = (uploadMiddleware) => (req, res, next) => {
   });
 };
 
-export {
-    handleUpload,
-    uploadImage,
-    uploadPdf,
-    uploadVideo
-}
+export { handleUpload, uploadImage, uploadPdf, uploadVideo };

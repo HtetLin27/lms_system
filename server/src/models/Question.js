@@ -1,36 +1,39 @@
-import { Model, DataTypes } from "sequelize";
-import { sequelize } from "../config/database.js";
+import { Model, DataTypes } from 'sequelize';
+import { sequelize } from '../config/database.js';
 
 class Question extends Model {}
 
-Question.init({
-    id:{
-        type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
-        primaryKey: true
+Question.init(
+  {
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true,
     },
-    quiz_id:{
-        type: DataTypes.UUID,
-        allowNull: false,
+    quiz_id: {
+      type: DataTypes.UUID,
+      allowNull: false,
     },
-    body:{
-        type: DataTypes.TEXT,
-        allowNull: false,
+    body: {
+      type: DataTypes.TEXT,
+      allowNull: false,
     },
-    order_index:{
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        defaultValue: 0,
+    order_index: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
     },
-    created_at:{
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW,
+    created_at: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
     },
-},{
+  },
+  {
     sequelize,
-    modelName: "Question",
-    tableName: "questions",
+    modelName: 'Question',
+    tableName: 'questions',
     timestamps: false,
-})
+  }
+);
 
 export default Question;

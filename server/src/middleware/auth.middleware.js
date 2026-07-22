@@ -1,25 +1,25 @@
-import jwt from "jsonwebtoken";
-import config from "../config/config.js";
+import jwt from 'jsonwebtoken';
+import config from '../config/config.js';
 
 const protect = (req, res, next) => {
   const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ message: "Unauthorized" });
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ message: 'Unauthorized' });
   }
-  const token = authHeader.split(" ")[1];
+  const token = authHeader.split(' ')[1];
   try {
     const decoded = jwt.verify(token, config.jwt.secret);
     req.user = { id: decoded.id, role: decoded.role };
     next();
   } catch (err) {
-    return res.status(401).json({ message: "Token invalid or expired" });
+    return res.status(401).json({ message: 'Token invalid or expired' });
   }
 };
 
-const authorize = (...allowedRoles) => {
+const authorise = (...allowedRoles) => {
   return (req, res, next) => {
     if (!allowedRoles.includes(req.user.role)) {
-      return res.status(403).json({ message: "Forbidden" });
+      return res.status(403).json({ message: 'Forbidden' });
     }
     next();
   };
@@ -28,8 +28,8 @@ const authorize = (...allowedRoles) => {
 const optionalAuth = (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
-    if (authHeader && authHeader.startsWith("Bearer ")) {
-      const token = authHeader.split(" ")[1];
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.split(' ')[1];
       const decoded = jwt.verify(token, config.jwt.secret);
       req.user = { id: decoded.id, role: decoded.role };
     }
@@ -39,4 +39,4 @@ const optionalAuth = (req, res, next) => {
   next();
 };
 
-export { protect, authorize, optionalAuth };
+export { protect, authorise, optionalAuth };

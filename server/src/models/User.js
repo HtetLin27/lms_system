@@ -1,6 +1,6 @@
-import { Model, DataTypes } from "sequelize";
-import bcrypt from "bcryptjs";
-import { sequelize } from "../config/database.js";
+import { Model, DataTypes } from 'sequelize';
+import bcrypt from 'bcryptjs';
+import { sequelize } from '../config/database.js';
 
 class User extends Model {
   async comparePassword(plainPassword) {
@@ -26,7 +26,7 @@ User.init(
       validate: {
         len: {
           args: [2, 100],
-          msg: "Name must be between 2 and 100 characters",
+          msg: 'Name must be between 2 and 100 characters',
         },
       },
     },
@@ -35,7 +35,7 @@ User.init(
       allowNull: false,
       unique: true,
       validate: {
-        isEmail: { msg: "Must be a valid email address" },
+        isEmail: { msg: 'Must be a valid email address' },
       },
     },
     password_hash: {
@@ -43,9 +43,9 @@ User.init(
       allowNull: false,
     },
     role: {
-      type: DataTypes.ENUM("student", "instructor", "admin"),
+      type: DataTypes.ENUM('student', 'instructor', 'admin'),
       allowNull: false,
-      defaultValue: "student",
+      defaultValue: 'student',
     },
     avatar_url: {
       type: DataTypes.STRING(500),
@@ -66,10 +66,10 @@ User.init(
   },
   {
     sequelize,
-    modelName: "User",
-    tableName: "users",
+    modelName: 'User',
+    tableName: 'users',
     timestamps: false,
-  },
+  }
 );
 
 User.beforeCreate(async (user) => {
@@ -77,7 +77,7 @@ User.beforeCreate(async (user) => {
 });
 
 User.beforeUpdate(async (user) => {
-  if (user.changed("password_hash")) {
+  if (user.changed('password_hash')) {
     user.password_hash = await bcrypt.hash(user.password_hash, 10);
   }
 });

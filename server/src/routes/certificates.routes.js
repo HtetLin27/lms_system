@@ -1,10 +1,10 @@
-import  express from 'express';
+import express from 'express';
 import {
   verifyCertificate,
   getMyCertificate,
   getAllMyCertificates,
-} from '../controllers/certificates.controller';
-import { protect, authorise } from '../middleware/auth.middleware';
+} from '../controllers/certificates.controller.js';
+import { protect, authorise } from '../middleware/auth.middleware.js';
 
 const router = express.Router();
 

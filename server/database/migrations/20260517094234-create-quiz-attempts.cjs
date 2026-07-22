@@ -4,36 +4,36 @@ module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('quiz_attempts', {
       id: {
-        type:         Sequelize.UUID,
+        type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
-        primaryKey:   true,
+        primaryKey: true,
       },
       quiz_id: {
-        type:       Sequelize.UUID,
-        allowNull:  false,
+        type: Sequelize.UUID,
+        allowNull: false,
         references: { model: 'quizzes', key: 'id' },
-        onDelete:   'CASCADE',
+        onDelete: 'CASCADE',
       },
       student_id: {
-        type:       Sequelize.UUID,
-        allowNull:  false,
+        type: Sequelize.UUID,
+        allowNull: false,
         references: { model: 'users', key: 'id' },
-        onDelete:   'CASCADE',
+        onDelete: 'CASCADE',
       },
       score_percent: {
-        type:      Sequelize.INTEGER,
+        type: Sequelize.INTEGER,
         allowNull: false,
       },
       passed: {
-        type:      Sequelize.BOOLEAN,
+        type: Sequelize.BOOLEAN,
         allowNull: false,
       },
       answers: {
-        type:      Sequelize.JSONB,
+        type: Sequelize.JSONB,
         allowNull: false,
       },
       attempted_at: {
-        type:         Sequelize.DATE,
+        type: Sequelize.DATE,
         defaultValue: Sequelize.NOW,
       },
     });

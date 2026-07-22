@@ -1,6 +1,6 @@
-import app from "./app.js";
-import connectDB from "./config/database.js";
-import config from "./config/config.js";
+import app from './app.js';
+import connectDB from './config/database.js';
+import config from './config/config.js';
 
 const PORT = config.app.port;
 
@@ -12,6 +12,6 @@ connectDB()
     });
   })
   .catch((err) => {
-    console.error("Failed to connect to database:", err.message);
+    console.error('Failed to connect to database:', err.message);
     process.exit(1);
   });

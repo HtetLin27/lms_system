@@ -1,120 +1,124 @@
-import { sequelize } from '../config/database.js'
-import { Course, Lesson, Enrollment} from '../models/index.js'
-import { isCourseOwner, canAccessLesson } from '../utils/ownership.js'
-import r2Service from '../services/r2.service.js'
+import { Op } from 'sequelize';
+import { sequelize } from '../config/database.js';
+import { Course, Lesson, Enrollment } from '../models/index.js';
+import { isCourseOwner, canAccessLesson } from '../utils/ownership.js';
+import r2Service from '../services/r2.service.js';
 
-const findCourse = async(slug) => {
-    const course = await Course.findOne({ where: {slug}});
-    return course;
-}
+const findCourse = async (slug) => {
+  const course = await Course.findOne({ where: { slug } });
+  return course;
+};
 
 const lessonBelongsToCourse = (lesson, courseId) => lesson.course_id === courseId;
 
-
 const listLessons = async (req, res, next) => {
-    try {
-        const course = await findCourse(req.params.slug);
-        if(!course) return res.status(404).json({ error: 'Course not found'});
+  try {
+    const course = await findCourse(req.params.slug);
+    if (!course) return res.status(404).json({ error: 'Course not found' });
 
-        const lessons = await Lesson.findAll({ 
-            where: {course_id : course.id},
-            order: [['order_index','ASC']],
-            attributes: [
-                'id','title','content_type','order_index','duration_seconds','is_preview','created_at'
-            ]
-        })
-        return res.status(200).json({ lessons });
-         
-    } catch (error) {
-        next(error)
+    const lessons = await Lesson.findAll({
+      where: { course_id: course.id },
+      order: [['order_index', 'ASC']],
+      attributes: [
+        'id',
+        'title',
+        'content_type',
+        'order_index',
+        'duration_seconds',
+        'is_preview',
+        'created_at',
+      ],
+    });
+    return res.status(200).json({ lessons });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getLesson = async (req, res, next) => {
+  try {
+    const course = await findCourse(req.params.slug);
+    if (!course) return res.status(404).json({ error: 'Course not found' });
+
+    const lesson = await Lesson.findByPk(req.params.id);
+    if (!lesson) return res.status(404).json({ error: 'Lesson not found' });
+
+    if (!lessonBelongsToCourse(lesson, course.id)) {
+      return res.status(404).json({ error: 'Lesson not found' });
     }
-}
 
-const getLesson = async (req, res, next) =>{
-    try {
-        const course = await findCourse(req.params.slug);
-        if(!course) return res.status(404).json({ error: 'Course not found'});
-
-        const lesson = await Lesson.findByPk(req.params.id);
-        if(!lesson) return res.status(404).json({ error: 'Lesson not found'});
-
-        if(!lessonBelongsToCourse(lesson, course.id)){
-            return res.status(404).json({ error: 'Lesson not found'})
-        }
-        
-        const hasAccess = await canAccessLesson(req.user, lesson, course, Enrollment);
-        if(!hasAccess){
-            return res.status(403).json({
-                error: 'Enroll in this course to access lesson content',
-                courseSlug: course.slug
-            })
-        }
-
-        const lessonData = lesson.toJSON();
-        
-        if(lesson.content_type === 'video' && lesson.file_url){
-            lessonData.video_url = await r2Service.getSignedFileUrl(lesson.file_url);
-
-            if(req.user?.role === 'student'){
-                delete lessonData.file_url
-            }
-        }
-        if(lesson.content_type === 'pdf' && lesson.file_url){
-            lessonData.pdf_url = await r2Service.getSignedFileUrl(lesson.file_url);
-            if(req.user?.role === 'student'){
-                delete lessonData.file_url;
-            }
-        }
-
-        return res.status(200).json({ lesson: lessonData })
-    } catch (error) {
-        next(error)
+    const hasAccess = await canAccessLesson(req.user, lesson, course, Enrollment);
+    if (!hasAccess) {
+      return res.status(403).json({
+        error: 'Enroll in this course to access lesson content',
+        courseSlug: course.slug,
+      });
     }
-}
 
+    const lessonData = lesson.toJSON();
+
+    if (lesson.content_type === 'video' && lesson.file_url) {
+      lessonData.video_url = await r2Service.getSignedFileUrl(lesson.file_url);
+
+      if (req.user?.role === 'student') {
+        delete lessonData.file_url;
+      }
+    }
+    if (lesson.content_type === 'pdf' && lesson.file_url) {
+      lessonData.pdf_url = await r2Service.getSignedFileUrl(lesson.file_url);
+      if (req.user?.role === 'student') {
+        delete lessonData.file_url;
+      }
+    }
+
+    return res.status(200).json({ lesson: lessonData });
+  } catch (error) {
+    next(error);
+  }
+};
 
 const createLesson = async (req, res, next) => {
-    try {
-        const course = await findCourse(req.params.slug);
-        if (!course) return res.status(404).json({ error: 'Course not found' });
+  try {
+    const course = await findCourse(req.params.slug);
+    if (!course) return res.status(404).json({ error: 'Course not found' });
 
-        if(!isCourseOwner(req.user, course)){
-            return res.status(403).json({ error: 'Not your course' });
-        }
-
-        const {
-            title,
-            content_type,
-            file_url,
-            content,
-            duration_seconds,
-            is_preview = false
-        } = req.body;
-
-        const maxOrder = await Lesson.max('order_index',{
-            where: { course_id: course.id}
-        })
-        const order_index = (maxOrder ?? -1) + 1;
-
-        const lesson = await Lesson.create({
-            course_id: course.id,
-            title,
-            content_type,
-            file_url: file_url || null,
-            content: content || null,
-            order_index,
-            duration_seconds: duration_seconds || null,
-            is_preview
-        })
-
-        return res.status(201).json({
-            message: 'Lesson created',
-            lesson
-        })
-    } catch (error) {
-        next(error)
+    if (!isCourseOwner(req.user, course)) {
+      return res.status(403).json({ error: 'Not your course' });
     }
-}
+
+    const {
+      title,
+      content_type,
+      file_url,
+      content,
+      duration_seconds,
+      is_preview = false,
+    } = req.body;
+
+    const maxOrder = await Lesson.max('order_index', {
+      where: { course_id: course.id },
+    });
+    const order_index = (maxOrder ?? -1) + 1;
+
+    const lesson = await Lesson.create({
+      course_id: course.id,
+      title,
+      content_type,
+      file_url: file_url || null,
+      content: content || null,
+      order_index,
+      duration_seconds: duration_seconds || null,
+      is_preview,
+    });
+
+    return res.status(201).json({
+      message: 'Lesson created',
+      lesson,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 const updateLesson = async (req, res, next) => {
   try {
@@ -134,13 +138,16 @@ const updateLesson = async (req, res, next) => {
 
     const allowed = ['title', 'content', 'file_url', 'is_preview', 'duration_seconds'];
     const updates = {};
-    allowed.forEach(field => {
+    allowed.forEach((field) => {
       if (req.body[field] !== undefined) updates[field] = req.body[field];
     });
 
-    if (updates.file_url && lesson.file_url &&
-        updates.file_url !== lesson.file_url &&
-        lesson.content_type !== 'text') {
+    if (
+      updates.file_url &&
+      lesson.file_url &&
+      updates.file_url !== lesson.file_url &&
+      lesson.content_type !== 'text'
+    ) {
       r2Service.deleteFile(lesson.file_url).catch(console.error);
     }
 
@@ -148,7 +155,9 @@ const updateLesson = async (req, res, next) => {
     await lesson.update(updates);
 
     return res.status(200).json({ message: 'Lesson updated', lesson });
-  } catch (err) { next(err); }
+  } catch (err) {
+    next(err);
+  }
 };
 
 const reorderLessons = async (req, res, next) => {
@@ -167,8 +176,8 @@ const reorderLessons = async (req, res, next) => {
     // Why verify all first:
     //   If we update one by one and fail midway, the order is partially
     //   changed — an inconsistent state. Verify all then update all.
-    const lessonIds = lessons.map(l => l.id);
-    const existing  = await Lesson.findAll({
+    const lessonIds = lessons.map((l) => l.id);
+    const existing = await Lesson.findAll({
       where: { id: lessonIds, course_id: course.id },
       attributes: ['id'],
     });
@@ -187,18 +196,15 @@ const reorderLessons = async (req, res, next) => {
     await sequelize.transaction(async (t) => {
       await Promise.all(
         lessons.map(({ id, order_index }) =>
-          Lesson.update(
-            { order_index, updated_at: new Date() },
-            { where: { id }, transaction: t }
-          )
+          Lesson.update({ order_index, updated_at: new Date() }, { where: { id }, transaction: t })
         )
       );
     });
 
     // Fetch updated lessons to return
     const updated = await Lesson.findAll({
-      where:      { course_id: course.id },
-      order:      [['order_index', 'ASC']],
+      where: { course_id: course.id },
+      order: [['order_index', 'ASC']],
       attributes: ['id', 'title', 'content_type', 'order_index', 'duration_seconds', 'is_preview'],
     });
 
@@ -206,7 +212,9 @@ const reorderLessons = async (req, res, next) => {
       message: 'Lessons reordered',
       lessons: updated,
     });
-  } catch (err) { next(err); }
+  } catch (err) {
+    next(err);
+  }
 };
 
 const deleteLesson = async (req, res, next) => {
@@ -239,20 +247,15 @@ const deleteLesson = async (req, res, next) => {
     //   on the instructor dashboard.
     await Lesson.decrement('order_index', {
       where: {
-        course_id:   course.id,
-        order_index: { [require('sequelize').Op.gt]: deletedOrder },
+        course_id: course.id,
+        order_index: { [Op.gt]: deletedOrder },
       },
     });
 
     return res.status(200).json({ message: 'Lesson deleted' });
-  } catch (err) { next(err); }
+  } catch (err) {
+    next(err);
+  }
 };
 
-export {
-    listLessons,
-    getLesson,
-    createLesson,
-    updateLesson,
-    reorderLessons,
-    deleteLesson,
-}
+export { listLessons, getLesson, createLesson, updateLesson, reorderLessons, deleteLesson };

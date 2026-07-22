@@ -1,25 +1,24 @@
 // server/src/routes/uploads.routes.js
 'use strict';
 
-const express = require('express');
+import express from 'express';
 import {
   uploadImage as uploadImageHandler,
   uploadAvatar,
-  uploadPdf as  uploadPdfHandler,
+  uploadPdf as uploadPdfHandler,
   uploadVideo as uploadVideoHandler,
-} from ('../controllers/upload.controller');
+} from '../controllers/upload.controller.js';
 import {
   uploadImage,
   uploadPdf,
   uploadVideo,
   handleUpload,
-} from ('../middleware/upload.middleware');
-import { protect, authorise } from ('../middleware/auth.middleware');
+} from '../middleware/upload.middleware.js';
+import { protect, authorise } from '../middleware/auth.middleware.js';
 
 const router = express.Router();
 
 router.use(protect);
-
 
 router.post(
   '/image',
@@ -30,18 +29,11 @@ router.post(
 
 router.post(
   '/avatar',
-  handleUpload(uploadImage),  // same Multer config — both are images
+  handleUpload(uploadImage), // same Multer config — both are images
   uploadAvatar
 );
 
-
-router.post(
-  '/pdf',
-  authorise('instructor', 'admin'),
-  handleUpload(uploadPdf),
-  uploadPdfHandler
-);
-
+router.post('/pdf', authorise('instructor', 'admin'), handleUpload(uploadPdf), uploadPdfHandler);
 
 router.post(
   '/video',
@@ -50,4 +42,4 @@ router.post(
   uploadVideoHandler
 );
 
-export default router
+export default router;

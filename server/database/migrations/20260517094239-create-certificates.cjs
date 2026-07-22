@@ -4,37 +4,33 @@ module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('certificates', {
       id: {
-        type:         Sequelize.UUID,
+        type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
-        primaryKey:   true,
+        primaryKey: true,
       },
       enrollment_id: {
-        type:       Sequelize.UUID,
-        unique:     true,
-        allowNull:  false,
+        type: Sequelize.UUID,
+        unique: true,
+        allowNull: false,
         references: { model: 'enrollments', key: 'id' },
-        onDelete:   'CASCADE',
+        onDelete: 'CASCADE',
       },
       file_url: {
-        type:      Sequelize.STRING(500),
+        type: Sequelize.STRING(500),
         allowNull: false,
       },
       verify_code: {
-        type:      Sequelize.STRING(100),
+        type: Sequelize.STRING(100),
         allowNull: false,
-        unique:    true,
+        unique: true,
       },
       issued_at: {
-        type:         Sequelize.DATE,
+        type: Sequelize.DATE,
         defaultValue: Sequelize.NOW,
       },
     });
 
-    await queryInterface.addIndex(
-      'certificates',
-      ['verify_code'],
-      { unique: true }
-    );
+    await queryInterface.addIndex('certificates', ['verify_code'], { unique: true });
   },
 
   async down(queryInterface) {

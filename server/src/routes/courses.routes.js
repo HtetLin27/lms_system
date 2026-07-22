@@ -1,11 +1,27 @@
 import express from 'express';
-import { listCourses, getMyCourses, getCourse, createCourse, updateCourse, submitForReview, publishCourse, rejectCourse, deleteCourse } from '../controllers/course.controller.js';
-import { createCourseRules, updateCourseRules, listCoursesRules } from '../middleware/course.validator';
+import {
+  listCourses,
+  getMyCourses,
+  getCourse,
+  createCourse,
+  updateCourse,
+  submitForReview,
+  publishCourse,
+  rejectCourse,
+  deleteCourse,
+} from '../controllers/course.controller.js';
+import {
+  createCourseRules,
+  updateCourseRules,
+  listCoursesRules,
+} from '../middleware/course.validator.js';
 import { protect, authorise, optionalAuth } from '../middleware/auth.middleware.js';
 import {
-  enrollInCourse, dropCourse, getCourseEnrollments,
-} from '../controllers/enrollments.controller';
-import { dropCourseRules } from '../middleware/enrollment.validator';
+  enrollInCourse,
+  dropCourse,
+  getCourseEnrollments,
+} from '../controllers/enrollments.controller.js';
+import { dropCourseRules } from '../middleware/enrollment.validator.js';
 import lessonRoutes from './lessons.routes.js';
 import quizRoutes from './quizzes.routes.js';
 const router = express.Router();
@@ -19,50 +35,27 @@ router.get('/:slug', optionalAuth, getCourse);
 
 // ── Instructor routes ───────────────────────────────────────────────────────
 
-router.post('/',
-  protect, authorise('instructor', 'admin'),
-  createCourseRules, createCourse
-);
+router.post('/', protect, authorise('instructor', 'admin'), createCourseRules, createCourse);
 
-router.patch('/:slug',
-  protect, authorise('instructor', 'admin'),
-  updateCourseRules, updateCourse
-);
+router.patch('/:slug', protect, authorise('instructor', 'admin'), updateCourseRules, updateCourse);
 
-router.patch('/:slug/submit',
-  protect, authorise('instructor', 'admin'),
-  submitForReview
-);
+router.patch('/:slug/submit', protect, authorise('instructor', 'admin'), submitForReview);
 
 // ── Admin only routes ───────────────────────────────────────────────────────
 router.patch('/:slug/publish', protect, authorise('admin'), publishCourse);
-router.patch('/:slug/reject',  protect, authorise('admin'), rejectCourse);
+router.patch('/:slug/reject', protect, authorise('admin'), rejectCourse);
 
 // ── Delete — instructor (own draft) or admin (any) ─────────────────────────
-router.delete('/:slug',
-  protect, authorise('instructor', 'admin'),
-  deleteCourse
-);
+router.delete('/:slug', protect, authorise('instructor', 'admin'), deleteCourse);
 
-router.post('/:slug/enroll',
-  protect, authorise('student'),
-  enrollInCourse
-);
+router.post('/:slug/enroll', protect, authorise('student'), enrollInCourse);
 
-router.delete('/:slug/enroll',
-  protect, authorise('student'),
-  dropCourseRules,
-  dropCourse
-);
+router.delete('/:slug/enroll', protect, authorise('student'), dropCourseRules, dropCourse);
 
-router.get('/:slug/enrollments',
-  protect, authorise('instructor', 'admin'),
-  getCourseEnrollments
-);
+router.get('/:slug/enrollments', protect, authorise('instructor', 'admin'), getCourseEnrollments);
 
 router.use('/:slug/lessons', lessonRoutes);
 
 router.use('/:slug/quizzes', quizRoutes);
-
 
 export default router;

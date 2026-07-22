@@ -1,4 +1,4 @@
-import User from "./User.js";
+import User from './User.js';
 import Course from './Course.js';
 import Category from './Category.js';
 import Lesson from './Lesson.js';
@@ -15,13 +15,13 @@ import Certificate from './Certificate.js';
 User.hasMany(Course, { foreignKey: 'instructor_id', as: 'courses' });
 Course.belongsTo(User, { foreignKey: 'instructor_id', as: 'instructor' });
 
-Category.hasMany(Course,   { foreignKey: 'category_id', as: 'courses' });
+Category.hasMany(Course, { foreignKey: 'category_id', as: 'courses' });
 Course.belongsTo(Category, { foreignKey: 'category_id', as: 'category' });
 
-User.hasMany(Enrollment,  { foreignKey: 'student_id', as: 'enrollments' });
+User.hasMany(Enrollment, { foreignKey: 'student_id', as: 'enrollments' });
 Enrollment.belongsTo(User, { foreignKey: 'student_id', as: 'student' });
 
-User.hasMany(QuizAttempt,  { foreignKey: 'student_id', as: 'quizAttempts' });
+User.hasMany(QuizAttempt, { foreignKey: 'student_id', as: 'quizAttempts' });
 QuizAttempt.belongsTo(User, { foreignKey: 'student_id', as: 'student' });
 
 Course.hasMany(Lesson, { foreignKey: 'course_id', as: 'lessons' });

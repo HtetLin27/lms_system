@@ -1,33 +1,26 @@
 'use strict';
 
-import { DeleteObjectCommand, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
-import {getSignedUrl} from "@aws-sdk/s3-request-presigner";
+import { DeleteObjectCommand, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { v4 as uuidv4 } from 'uuid';
-import r2Client from '../config/r2';
-import config from '../config/config';
+import r2Client from '../config/r2.js';
+import config from '../config/config.js';
 
 const generateKey = (folder, originalname) => {
   const ext = originalname.split('.').pop().toLowerCase();
   return `${folder}/${uuidv4()}.${ext}`;
-}
-
-const FOLDERS = {
-  image:       'images',
-  video:       'videos',
-  pdf:         'pdfs',
-  thumbnail:   'thumbnails',
-  certificate: 'certificates',
-  avatar:      'avatars',
 };
 
+const FOLDERS = {
+  image: 'images',
+  video: 'videos',
+  pdf: 'pdfs',
+  thumbnail: 'thumbnails',
+  certificate: 'certificates',
+  avatar: 'avatars',
+};
 
-const uploadFile = async ({
-  buffer,
-  originalname,
-  mimeType,
-  folder,
-  isPublic = false,
-}) => {
+const uploadFile = async ({ buffer, originalname, mimeType, folder, isPublic = false }) => {
   const key = generateKey(folder, originalname);
 
   // What:  PutObjectCommand uploads the file to R2.
@@ -37,18 +30,16 @@ const uploadFile = async ({
   //   Setting the correct type means browsers handle the file correctly —
   //   images display, videos play, PDFs render inline.
   const command = new PutObjectCommand({
-    Bucket:      config.r2.bucketName,
-    Key:         key,
-    Body:        buffer,
+    Bucket: config.r2.bucketName,
+    Key: key,
+    Body: buffer,
     ContentType: mimeType,
   });
 
   await r2Client.send(command);
 
   // Build the URL depending on whether the file is public or private
-  const url = isPublic && config.r2.publicUrl
-    ? `${config.r2.publicUrl}/${key}`
-    : null;
+  const url = isPublic && config.r2.publicUrl ? `${config.r2.publicUrl}/${key}` : null;
   // Why null for private files:
   //   Private files do not have a permanent URL.
   //   The signed URL changes every time it is generated.
@@ -67,11 +58,11 @@ const uploadFile = async ({
 //   R2 charges for storage (after the free tier). Orphaned files cost money.
 
 const deleteFile = async (key) => {
-  if (!key) return;  // safety guard — never call with empty key
+  if (!key) return; // safety guard — never call with empty key
 
   const command = new DeleteObjectCommand({
     Bucket: config.r2.bucketName,
-    Key:    key,
+    Key: key,
   });
 
   await r2Client.send(command);
@@ -96,7 +87,7 @@ const getSignedFileUrl = async (key, expiresIn = config.signedUrl.expiresIn) => 
 
   const command = new GetObjectCommand({
     Bucket: config.r2.bucketName,
-    Key:    key,
+    Key: key,
   });
 
   return getSignedUrl(r2Client, command, { expiresIn });
@@ -114,11 +105,12 @@ const getKeyFromUrl = (url) => {
   return url.replace(`${config.r2.publicUrl}/`, '');
 };
 
+export { uploadFile, deleteFile, getSignedFileUrl, getKeyFromUrl, FOLDERS };
 
-export {
-    uploadFile,
-    deleteFile,
-    getSignedFileUrl,
-    getKeyFromUrl,
-    FOLDERS
-}
+export default {
+  uploadFile,
+  deleteFile,
+  getSignedFileUrl,
+  getKeyFromUrl,
+  FOLDERS,
+};
