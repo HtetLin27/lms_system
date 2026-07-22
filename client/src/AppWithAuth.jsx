@@ -1,6 +1,6 @@
-import { useEffect } from "react";
-import App from "./App.jsx";
-import { useAuthStore } from "./stores/authStore.js";
+import { useEffect } from 'react';
+import App from './App.jsx';
+import { useAuthStore } from './stores/authStore.js';
 
 export default function AppWithAuth() {
   const fetchMe = useAuthStore((state) => state.fetchMe);

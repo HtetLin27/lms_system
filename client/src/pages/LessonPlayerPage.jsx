@@ -1,10 +1,5 @@
-
 const LessonPlayerPage = () => {
-  return (
-    <div>
-      LessonPlayerPage
-    </div>
-  )
-}
+  return <div>LessonPlayerPage</div>;
+};
 
-export default LessonPlayerPage
+export default LessonPlayerPage;

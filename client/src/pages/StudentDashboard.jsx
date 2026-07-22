@@ -1,10 +1,5 @@
-
 const StudentDashboard = () => {
-  return (
-    <div>
-      StudentDashboard
-    </div>
-  )
-}
+  return <div>StudentDashboard</div>;
+};
 
-export default StudentDashboard
+export default StudentDashboard;

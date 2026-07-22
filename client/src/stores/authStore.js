@@ -1,6 +1,6 @@
-import api from "../api/axios";
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import api from '../api/axios';
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 export const useAuthStore = create(
   persist(
@@ -12,13 +12,13 @@ export const useAuthStore = create(
       login: async (email, password) => {
         set({ loading: true });
         try {
-          const res = await api.post("/auth/login", { email, password });
+          const res = await api.post('/auth/login', { email, password });
           const { token, user } = res.data;
 
           // Why store token in localStorage here AND in the store:
           // The Axios interceptor reads from localStorage on every request.
           // The store holds it for components that need to check auth status.
-          localStorage.setItem("token", token);
+          localStorage.setItem('token', token);
 
           set({ user, token, loading: false });
           return user;
@@ -28,10 +28,10 @@ export const useAuthStore = create(
         }
       },
 
-      register: async (name, email, password, role = "student") => {
+      register: async (name, email, password, role = 'student') => {
         set({ loading: true });
         try {
-          const res = await api.post("/auth/register", {
+          const res = await api.post('/auth/register', {
             name,
             email,
             password,
@@ -39,7 +39,7 @@ export const useAuthStore = create(
           });
           const { token, user } = res.data;
 
-          localStorage.setItem("token", token);
+          localStorage.setItem('token', token);
           set({ user, token, loading: false });
           return user;
         } catch (err) {
@@ -49,7 +49,7 @@ export const useAuthStore = create(
       },
 
       logout: () => {
-        localStorage.removeItem("token");
+        localStorage.removeItem('token');
         set({ user: null, token: null });
       },
 
@@ -58,7 +58,7 @@ export const useAuthStore = create(
         if (!token) return; // not logged in, nothing to fetch
 
         try {
-          const res = await api.get("/auth/me");
+          const res = await api.get('/auth/me');
           set({ user: res.data.user });
         } catch {
           // Token expired or invalid — log the user out
@@ -73,19 +73,17 @@ export const useAuthStore = create(
       setUser: (user) => set({ user }),
     }),
     {
-      name: "lms-auth",
+      name: 'lms-auth',
       partialize: (state) => ({
         user: state.user,
         token: state.token,
       }),
-    },
-  ),
+    }
+  )
 );
 
 export const useCurrentUser = () => useAuthStore((s) => s.user);
-export const useIsStudent = () =>
-  useAuthStore((s) => s.user?.role === "student");
-export const useIsInstructor = () =>
-  useAuthStore((s) => s.user?.role === "instructor");
-export const useIsAdmin = () => useAuthStore((s) => s.user?.role === "admin");
+export const useIsStudent = () => useAuthStore((s) => s.user?.role === 'student');
+export const useIsInstructor = () => useAuthStore((s) => s.user?.role === 'instructor');
+export const useIsAdmin = () => useAuthStore((s) => s.user?.role === 'admin');
 export const useIsLoggedIn = () => useAuthStore((s) => !!s.user);
