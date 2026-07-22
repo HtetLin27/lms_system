@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+.next/
+
+# Test coverage
+coverage/
+
+# Environment files
+.env
+.env.local
+.env.production
+.env.*.local
+
+# Lockfiles
+package-lock.json
+client/package-lock.json
+server/package-lock.json
+
+# Logs and temporary files
+*.log
+tmp/
+temp/

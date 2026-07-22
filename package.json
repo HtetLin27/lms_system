@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
     "test": "npm --prefix client run lint && npm --prefix client run build && npm --prefix server test -- --passWithNoTests",
     "prepare": "husky"
   },
