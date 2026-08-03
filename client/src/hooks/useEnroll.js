@@ -6,7 +6,7 @@ export const useEnroll = (slug) => {
   return useMutation({
     mutationFn: () => enrollInCourse(slug),
     onSuccess: () => {
-      queryClient.invalidateQueries(['course', slug]);
+      queryClient.invalidateQueries({ queryKey: ['course', slug] });
     },
   });
 };

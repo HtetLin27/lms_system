@@ -32,7 +32,7 @@ const Navbar = () => {
             <Button>Register</Button>
           </Link>
         )}
-        {isLogin && isStudent && <Link to="/my-course">My Courses</Link>}
+        {isLogin && isStudent && <Link to="/my-courses">My Courses</Link>}
         {isLogin && isStudent && <Link to="/certificates">Certificates</Link>}
         {isLogin && (isInstructor || isAdmin) && <Link to="/instructor">Dashboard</Link>}
         {isLogin && <Button onClick={handleLogout}>Logout</Button>}

@@ -46,20 +46,17 @@ const CourseDetailPage = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
   const user = useCurrentUser();
-  const enrollMutation = useEnroll(slug);
+  const { mutate: enroll, isPending } = useEnroll(slug);
 
   const { data, isLoading, isError } = useCourse(slug);
   const course = data?.data?.course;
 
-  // We will build useEnroll in the next step
-  // For now the button just navigates
   const handleEnroll = () => {
     if (!user) {
       navigate('/login');
       return;
     }
-    // enroll logic coming soon
-    enrollMutation.mutate(slug);
+    enroll(slug);
   };
 
   // ── Loading ────────────────────────────────────────────────────────────────
@@ -98,8 +95,8 @@ const CourseDetailPage = () => {
 
     // Not enrolled
     return (
-      <Button className="w-full" onClick={handleEnroll}>
-        Enroll Now — It's Free
+      <Button className="w-full" onClick={handleEnroll} disabled={isPending}>
+        {isPending ? 'Enrolling...' : "Enroll Now — It's Free"}
       </Button>
     );
   };

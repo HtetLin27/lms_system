@@ -59,7 +59,7 @@ export const useAuthStore = create(
 
         try {
           const res = await api.get('/auth/me');
-          set({ user: res.data.user });
+          set({ user: res.data });
         } catch {
           // Token expired or invalid — log the user out
           get().logout();
